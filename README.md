@@ -4,6 +4,7 @@
 - [在微信小程序中使用animatecss-动画库](#在微信小程序中使用animatecss-动画库)  
 - [小程序颜色问题](#小程序颜色问题)  
 - [安卓手机wx.hideLoading()无效](#安卓手机wxhideloading无效)
+- [微信小程序使用Promise](#微信小程序使用Promise)
 ---
 :smile:  :laughing:  :blush:  :relaxed:
 ***
@@ -59,4 +60,57 @@ wx.hideLoading()方法外层加个setTimeout居然就解决了。
 setTimeout(() => {
    wx.hideLoading();
 }, 100);
+```
+
+## 微信小程序使用Promise
+微信小程序使用Promise，其实只需要在API方法外层包一个promise就行了。
+
+本文以微信登陆和获取用户信息接口为例。
+
+封装代码：wechat.js  
+```js
+/**
+ * Promise化小程序接口
+ */
+class Wechat {
+  /**
+   * 登陆
+   * @return {Promise} 
+   */
+  static login() {
+    return new Promise((resolve, reject) => wx.login({ success: resolve, fail: reject }));
+  };
+ 
+  /**
+   * 获取用户信息
+   * @return {Promise} 
+   */
+  static getUserInfo() {
+    return new Promise((resolve, reject) => wx.getUserInfo({ success: resolve, fail: reject }));
+  };
+ 
+};
+ 
+module.exports = Wechat;
+```  
+调用代码：  
+```js
+let wechat = require('./wechat.js');
+    wechat.login()
+      .then(d => {
+        console.log("登陆", d);
+        return wechat.getUserInfo();
+      })
+      .then(d => {
+        console.log("获取用户信息", d);
+      })
+      .catch(e => {
+        console.log(e);
+      })
+```  
+如果需要传递参数，比如设置本地数据缓存接口：  
+```js
+  static setStorage(key, value) {
+    return new Promise((resolve, reject) => wx.setStorage({ key: key, data: value, success: resolve, fail: reject }));
+  };
 ```
