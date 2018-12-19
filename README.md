@@ -7,7 +7,11 @@
 [animate.css官网](https://daneden.github.io/animate.css/)  
 由于小程序对代码大小限制比较大，所以删除了animate.css中 所有@-webkit-部分css，减少了一半体积  
 再把文件后缀名改为wxss，以后出来的百度小程序、支付宝小程序、今日头条小程序估计修改对应的后缀名就可以直接使用了  
-[点击下载](http://nodejs999.com/animate.wxss)
+[点击下载](http://nodejs999.com/animate.wxss)  
+放到小程序代码中，然后@import到app.wxss文件中。   
+我项目是把animate.wxss文件放在utils文件夹下。  
+所以在app.wxss中加入 @import './utils/animate.wxss'; 即可
+
 
 ## 小程序颜色问题
 在写tabBar的时候配置了字体颜色，代码如下  
