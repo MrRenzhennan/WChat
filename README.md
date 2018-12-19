@@ -4,6 +4,9 @@
 - [在微信小程序中使用animatecss-动画库](#在微信小程序中使用animatecss-动画库)  
 - [小程序颜色问题](#小程序颜色问题)  
 - [安卓手机wx.hideLoading()无效](#安卓手机wxhideloading无效)
+---
+:smile:  :laughing:  :blush:  :relaxed:
+***
 ## 在微信小程序中使用animate.css 动画库
 [微信小程序动画有自己的方法](https://developers.weixin.qq.com/miniprogram/dev/api/wx.createAnimation.html)  
 [animate.css官网](https://daneden.github.io/animate.css/)  
