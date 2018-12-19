@@ -28,3 +28,26 @@ background: #666;
 background: #666666; 这样就正常了。
 ```
 只能说明小程序真任性！！
+
+## 安卓手机wx.hideLoading()无效
+
+首先在onLoad()中
+```js
+wx.showLoading({
+  title: “数据加载中”,
+  mask: true
+});
+```
+异步获取数据后  
+
+`wx.hideLoading();`  
+
+测试结果  
+在微信开发者工具和iOS上都能正常隐藏loading框，安卓手机上却无法隐藏。  
+**解决办法**  
+wx.hideLoading()方法外层加个setTimeout居然就解决了。  
+```js
+setTimeout(() => {
+   wx.hideLoading();
+}, 100);
+```
