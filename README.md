@@ -5,6 +5,7 @@
 - [小程序颜色问题](#小程序颜色问题)  
 - [安卓手机wx.hideLoading()无效](#安卓手机wxhideloading无效)
 - [微信小程序使用Promise](#微信小程序使用Promise)
+- [微信小程序-获取用户session_key,openid,unionid](#微信小程序-获取用户session_key-openid-unionid)
 ---
 :smile:  :laughing:  :blush:  :relaxed:
 ***
@@ -113,4 +114,174 @@ let wechat = require('./wechat.js');
   static setStorage(key, value) {
     return new Promise((resolve, reject) => wx.setStorage({ key: key, data: value, success: resolve, fail: reject }));
   };
+```  
+
+## 微信小程序-获取用户session_key,openid,unionid
+1. 通过wx.login接口获取code既jscode，传递到后端  
+2. 后端请求https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code地址，就能获取到openid和unionid。  
+
+**小程序接口promise化和封装**  
+
+**1、utils文件夹下创建wechat.js文件**  
+```js
+/**
+ * Promise化小程序接口
+ */
+class Wechat {
+  /**
+   * 登陆
+   * @return {Promise} 
+   */
+  static login() {
+    return new Promise((resolve, reject) => wx.login({ success: resolve, fail: reject }));
+  };
+ 
+  /**
+   * 获取用户信息
+   * @return {Promise} 
+   */
+  static getUserInfo() {
+    return new Promise((resolve, reject) => wx.getUserInfo({ success: resolve, fail: reject }));
+  };
+ 
+  /**
+   * 发起网络请求
+   * @param {string} url  
+   * @param {object} params 
+   * @return {Promise} 
+   */
+  static request(url, params, method = "GET", type = "json") {
+    console.log("向后端传递的参数", params);
+    return new Promise((resolve, reject) => {
+      let opts = {
+        url: url,
+        data: Object.assign({}, params),
+        method: method,
+        header: { 'Content-Type': type },
+        success: resolve,
+        fail: reject
+      }
+      console.log("请求的URL", opts.url);
+      wx.request(opts);
+    });
+  };
+ 
+  /**
+   * 获取微信数据,传递给后端
+   */
+  static getCryptoData() {
+    let code = "";
+    return this.login()
+      .then(data => {
+        code = data.code;
+        console.log("login接口获取的code:", code);
+        return this.getUserInfo();
+      })
+      .then(data => {
+        console.log("getUserInfo接口", data);
+        let obj = {
+          js_code: code,
+        };
+        return Promise.resolve(obj);
+      })
+      .catch(e => {
+        console.log(e);
+        return Promise.reject(e);
+      })
+  };
+ 
+  /**
+   * 从后端获取openid
+   * @param {object} params 
+   */
+  static getMyOpenid(params) {
+    let url = 'https://xx.xxxxxx.cn/api/openid';
+    return this.request(url, params, "POST", "application/x-www-form-urlencoded");
+  };
+}
+module.exports = Wechat;
+```  
+**2、修改小程序的app.js文件**  
+```js
+let wechat = require('./utils/wechat.js');
+App({
+  onLaunch() {
+    this.getUserInfo();
+  },
+  getUserInfo() {
+    wechat.getCryptoData()
+      .then(d => {
+        return wechat.getMyOpenid(d);
+      })
+      .then(d => {
+        console.log("从后端获取的openid", d.data);
+      })
+      .catch(e => {
+        console.log(e);
+      })
+  }
+})
 ```
+
+**后端nodejs，是用的express命令行生成的项目框架，**
+
+**1、创建common文件夹，创建utils文件，使用request模块请求接口，promise化request**  
+
+```js
+const request = require("request");
+class Ut {
+ 
+    /**
+     * promise化request
+     * @param {object} opts 
+     * @return {Promise<[]>}
+     */
+    static promiseReq(opts = {}) {
+	return new Promise((resolve, reject) => {
+	    request(opts, (e, r, d) => {
+		if (e) {
+		    return reject(e);
+		}
+	        if (r.statusCode != 200) {
+		    return reject(`back statusCode：${r.statusCode}`);
+		}
+		return resolve(d);
+	    });
+	})
+    };
+ 
+};
+ 
+module.exports = Ut;
+```
+
+**2、新增路由，appId、secret在小程序的后台获取**  
+```js
+router.post("/openid", async (req, res) => {
+  const Ut = require("../common/utils");
+  try {
+    console.log(req.body);
+    let appId = "wx70xxxxxxbed01b";
+    let secret = "5ec6exxxxxx49bf161a79dd4";
+    let { js_code } = req.body;
+    let opts = {
+      url: `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${secret}&js_code=${js_code}&grant_type=authorization_code`
+    }
+    let r1 = await Ut.promiseReq(opts);
+    r1 = JSON.parse(r1);
+    console.log(r1);
+    res.json(r1);
+  }
+  catch (e) {
+    console.log(e);
+    res.json('');
+  }
+})
+```  
+结果：  
+![..](https://img-blog.csdn.net/20180223101525677)  
+这个返回结果没有unionid，按照官方的说法，需要在[微信开放平台](https://open.weixin.qq.com/)绑定小程序；  
+如果需要解密和数据校验，[请跳转这里](#微信小程序用户数据的签名校验和加解密-后端nodejs)。
+
+
+## 微信小程序用户数据的签名校验和加解密 - 后端nodejs
