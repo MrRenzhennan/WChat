@@ -284,3 +284,24 @@ router.post("/openid", async (req, res) => {
 这个返回结果没有unionid，按照官方的说法，需要在[微信开放平台](https://open.weixin.qq.com/)绑定小程序；  
 如果需要解密和数据校验，[请跳转这里](https://blog.csdn.net/zzwwjjdj1/article/details/79351973)。
 
+
+## 微信小程序-从相册获取图片,视频 使用相机拍照,录像上传
+本文知识点：
+
+1、微信小程序选择图片wx.chooseImage()接口的使用
+
+2、微信小程序选择视频wx.chooseVideo()接口的使用
+
+3、微信小程序上传文件接口wx.uploadFile()的使用  
+
+**效果**
+![..](https://img-blog.csdn.net/20180226171424662)    
+开发工具里上传的视频格式为webm，真机上为mp4。  
+
+`注意`：  
+1、在微信开发工具里选择视频接口wx.chooseVideo()返回的数据有视频缩略图字段(thumbTempFilePath)，在真机上没有；  
+2、上传视频时，compressed压缩字段无效，不知是所有手机无效还是部分，本文测试时，使用的是华为mate9，这也是小程序的深坑之一；  
+3、上传视频时，使用录制方式，华为mate9视频大小过大，录制的6秒钟视频就有20多M，网上说好像mate9的视频编码格式是h265，普通手机为h264，也许是无法压缩问题引起的；  
+![..](https://img-blog.csdn.net/20180226172135285)  
+
+
