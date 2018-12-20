@@ -5,7 +5,7 @@
 - [小程序颜色问题](#小程序颜色问题)  
 - [安卓手机wx.hideLoading()无效](#安卓手机wxhideloading无效)
 - [微信小程序使用Promise](#微信小程序使用Promise)
-- [微信小程序-获取用户session_key,openid,unionid](#微信小程序-获取用户session_key-openid-unionid)
+- [微信小程序-获取用户session_key,openid,unionid](#微信小程序-获取用户session_keyopenidunionid)
 - [微信小程序-form表单提交](https://blog.csdn.net/zzwwjjdj1/article/details/79354711)
 ---
 :smile:  :laughing:  :blush:  :relaxed:
