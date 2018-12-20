@@ -281,7 +281,5 @@ router.post("/openid", async (req, res) => {
 结果：  
 ![..](https://img-blog.csdn.net/20180223101525677)  
 这个返回结果没有unionid，按照官方的说法，需要在[微信开放平台](https://open.weixin.qq.com/)绑定小程序；  
-如果需要解密和数据校验，[请跳转这里](#微信小程序用户数据的签名校验和加解密-后端nodejs)。
+如果需要解密和数据校验，[请跳转这里](https://blog.csdn.net/zzwwjjdj1/article/details/79351973)。
 
-
-## 微信小程序用户数据的签名校验和加解密 - 后端nodejs
